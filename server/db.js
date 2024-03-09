@@ -29,7 +29,7 @@ const createTables = async () => {
         id UUID PRIMARY KEY,
         skill_id UUID REFERENCES skills(id) NOT NULL,
         user_id UUID REFERENCES users(id) NOT NULL,
-        CONSTRAINT unique_skill_user UNIQUE (skill_id, user_id)
+        CONSTRAINT unique_user_id_skill_id UNIQUE (user_id, skill_id)
     );
     `;
 
@@ -65,6 +65,7 @@ const createUserSkill = async ({ user_id, skill_id }) => {
     const response = await client.query(SQL, [uuid.v4(), user_id, skill_id]);
     return response.rows[0];
 };
+
 // fetchUsers - fetches all the users
 const fetchUsers = async () => {
     const SQL = `
@@ -85,12 +86,12 @@ const fetchSkills = async () => {
 };
 
 // fetchUserSkills - takes an id for a user and returns their user_skills
-const fetchUserSkills = async (id) => {
+const fetchUserSkills = async (user_id) => {
     const SQL = `
       SELECT * FROM user_skills
       WHERE user_id = $1
     `;
-    const response = await client.query(SQL, [id]);
+    const response = await client.query(SQL, [user_id]);
     return response.rows;
 };
 
